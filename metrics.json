@@ -1,0 +1,6 @@
+{
+  "accuracy": 0.7989,
+  "test_size": 179,
+  "tree_depth_used": 6,
+  "n_leaves": 33
+}

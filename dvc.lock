@@ -1,0 +1,85 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python src/preprocess.py
+    deps:
+    - path: data/raw/titanic.csv
+      hash: md5
+      md5: 2309cc5f04782ed9bb6016d9f4e381cf
+      size: 61194
+    - path: src/preprocess.py
+      hash: md5
+      md5: ebbd0f761a13ace40d5c0240a79d4265
+      size: 7177
+    params:
+      params.yaml:
+        data.processed_path: data/processed/features.csv
+        data.raw_path: data/raw/titanic.csv
+        features.use_columns:
+        - Pclass
+        - Sex
+        - Age
+        - SibSp
+        - Parch
+        - Fare
+        - Embarked
+    outs:
+    - path: data/processed/features.csv
+      hash: md5
+      md5: e1e72f009a24a8081e0482b2fd088fe6
+      size: 23278
+  train:
+    cmd: python src/train.py
+    deps:
+    - path: data/processed/features.csv
+      hash: md5
+      md5: e1e72f009a24a8081e0482b2fd088fe6
+      size: 23278
+    - path: src/train.py
+      hash: md5
+      md5: 66fbaf440fa07704d99cc939b6690c30
+      size: 9747
+    params:
+      params.yaml:
+        data.random_state: 42
+        data.test_size: 0.2
+        mlflow.experiment_name: titanic-survival
+        model.criterion: gini
+        model.max_depth: 6
+        model.min_samples_leaf: 2
+        model.min_samples_split: 10
+        model.random_state: 42
+    outs:
+    - path: models/dt_model.pkl
+      hash: md5
+      md5: 47d3b402a14b5f40a963c17b4e3650b5
+      size: 6465
+    - path: models/run_id.txt
+      hash: md5
+      md5: e458e8123e7190d9c6aa64e7ff60cf12
+      size: 32
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+    - path: data/processed/features.csv
+      hash: md5
+      md5: e1e72f009a24a8081e0482b2fd088fe6
+      size: 23278
+    - path: models/dt_model.pkl
+      hash: md5
+      md5: 47d3b402a14b5f40a963c17b4e3650b5
+      size: 6465
+    - path: src/evaluate.py
+      hash: md5
+      md5: 08156dbb2baf68cc0041a9d4a8e7839d
+      size: 7314
+    params:
+      params.yaml:
+        data.random_state: 42
+        data.test_size: 0.2
+        evaluation.min_accuracy: 0.77
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: 08ded8ef2373f4781dda5e6d0bfa82c5
+      size: 91
